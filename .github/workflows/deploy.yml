@@ -18,11 +18,15 @@ jobs:
           version: "latest"
 
       - name: Configure kubeconfig
+        shell: bash
         run: |
           mkdir -p ~/.kube
-          echo "${{ secrets.KUBE_CONFIG }}" > ~/.kube/config
+          # Write kubeconfig exactly as stored in secret
+          printf "%s" "${{ secrets.KUBE_CONFIG }}" > ~/.kube/config
+          chmod 600 ~/.kube/config
+
+      - name: Verify connection
+        run: kubectl get nodes
 
       - name: Deploy manifest
         run: kubectl apply -f k8s/manifest.yaml
-
-
