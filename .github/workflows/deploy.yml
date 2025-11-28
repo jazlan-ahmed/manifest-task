@@ -18,8 +18,11 @@ jobs:
           version: "latest"
 
       - name: Configure kubeconfig
-        run: echo "${{ secrets.KUBE_CONFIG }}" > ~/.kube/config
+        run: |
+          mkdir -p ~/.kube
+          echo "${{ secrets.KUBE_CONFIG }}" > ~/.kube/config
 
       - name: Deploy manifest
         run: kubectl apply -f k8s/manifest.yaml
+
 
