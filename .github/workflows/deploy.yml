@@ -9,24 +9,30 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # 1) Checkout code
       - name: Checkout code
         uses: actions/checkout@v3
 
+      # 2) Install kubectl
       - name: Set up kubectl
         uses: azure/setup-kubectl@v3
         with:
           version: "latest"
 
+      # 3) Configure kubeconfig from GitHub secret (RAW YAML)
       - name: Configure kubeconfig
         shell: bash
         run: |
           mkdir -p ~/.kube
-          # Write kubeconfig exactly as stored in secret
-          printf "%s" "${{ secrets.KUBE_CONFIG }}" > ~/.kube/config
+          # Write kubeconfig from secret
+          printf '%s\n' "${{ secrets.KUBE_CONFIG }}" > ~/.kube/config
           chmod 600 ~/.kube/config
 
-      - name: Verify connection
+      # 4) Test kubectl connection
+      - name: Test kubectl connection
         run: kubectl get nodes
 
+      # 5) Deploy your Kubernetes manifest
       - name: Deploy manifest
         run: kubectl apply -f k8s/manifest.yaml
+
